@@ -7,12 +7,15 @@ provider:
   runtime: python2.7
   stage: dev
   region: ap-northeast-1
+  environment:
+    slackChannel: ${env:SLACK_CHANNEL}
+    hookUrl: ${env:HOOK_URL}
 
 functions:
-  hello:
-    handler: handler.hello
-    name: hello-${self:provider.stage}
-    description: "try serverless function."
+  notify_slack:
+    handler: handler.notify_slack
+    name: notify_slack-${self:provider.stage}
+    description: "log message post to slack."
     memorySize: 128
     runtime: python2.7
     timeout: 3

@@ -10,6 +10,10 @@
       "variableSyntax": "\\${([ ~:a-zA-Z0-9._'\",\\-\\/\\(\\)]+?)}",
       "name": "aws",
       "runtime": "python2.7",
+      "environment": {
+        "slackChannel": "#test",
+        "hookUrl": "https://hooks.slack.com/services/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"
+      },
       "versionFunctions": true,
       "remoteFunctionData": null,
       "compiledCloudFormationTemplate": {
@@ -19,42 +23,48 @@
           "ServerlessDeploymentBucket": {
             "Type": "AWS::S3::Bucket"
           },
-          "HelloLogGroup": {
+          "NotifyUnderscoreslackLogGroup": {
             "Type": "AWS::Logs::LogGroup",
             "Properties": {
-              "LogGroupName": "/aws/lambda/hello-dev"
+              "LogGroupName": "/aws/lambda/notify_slack-dev"
             }
           },
-          "HelloLambdaFunction": {
+          "NotifyUnderscoreslackLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/try-serverless/dev/1511254969862-2017-11-21T09:02:49.862Z/try-serverless.zip"
+                "S3Key": "serverless/try-serverless/dev/1511257622382-2017-11-21T09:47:02.382Z/try-serverless.zip"
               },
-              "FunctionName": "hello-dev",
-              "Handler": "handler.hello",
+              "FunctionName": "notify_slack-dev",
+              "Handler": "handler.notify_slack",
               "MemorySize": 128,
               "Role": "arn:aws:iam::059991434768:role/lambda-role",
               "Runtime": "python2.7",
               "Timeout": 3,
-              "Description": "try serverless function."
+              "Description": "log message post to slack.",
+              "Environment": {
+                "Variables": {
+                  "slackChannel": "#test",
+                  "hookUrl": "https://hooks.slack.com/services/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"
+                }
+              }
             },
             "DependsOn": [
-              "HelloLogGroup"
+              "NotifyUnderscoreslackLogGroup"
             ]
           },
-          "HelloLambdaVersionDZ155BihcDB1mkYHXLu2aUmQujW0WbM2duHiD7f3dPw": {
+          "NotifyUnderscoreslackLambdaVersion6okG4ofIePvFiS3SE4NNYPitRBaVb6Xp1RoRtJHoM8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
-                "Ref": "HelloLambdaFunction"
+                "Ref": "NotifyUnderscoreslackLambdaFunction"
               },
-              "CodeSha256": "DZ155BihcDB1mkYHXLu2aUmQujW0WbM2duHiD7f3dPw=",
-              "Description": "try serverless function."
+              "CodeSha256": "6okG4ofIePvFiS3SE4N+NYPitRBaVb6Xp1RoRtJHoM8=",
+              "Description": "log message post to slack."
             }
           }
         },
@@ -64,10 +74,10 @@
               "Ref": "ServerlessDeploymentBucket"
             }
           },
-          "HelloLambdaFunctionQualifiedArn": {
+          "NotifyUnderscoreslackLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HelloLambdaVersionDZ155BihcDB1mkYHXLu2aUmQujW0WbM2duHiD7f3dPw"
+              "Ref": "NotifyUnderscoreslackLambdaVersion6okG4ofIePvFiS3SE4NNYPitRBaVb6Xp1RoRtJHoM8"
             }
           }
         }
@@ -91,10 +101,10 @@
       "vpc": {}
     },
     "functions": {
-      "hello": {
-        "handler": "handler.hello",
-        "name": "hello-dev",
-        "description": "try serverless function.",
+      "notify_slack": {
+        "handler": "handler.notify_slack",
+        "name": "notify_slack-dev",
+        "description": "log message post to slack.",
         "memorySize": 128,
         "runtime": "python2.7",
         "timeout": 3,
@@ -107,7 +117,7 @@
     "artifact": "/Users/masaru.kojo/work/test/serverless/try-serverless/.serverless/try-serverless.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/try-serverless/dev/1511254969862-2017-11-21T09:02:49.862Z",
+    "artifactDirectoryName": "serverless/try-serverless/dev/1511257622382-2017-11-21T09:47:02.382Z",
     "artifact": "try-serverless.zip"
   }
 }
