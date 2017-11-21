@@ -1,0 +1,9 @@
+{
+    "logGroup": "log_group_name",
+    "logStream": "log_stream_name",
+    "logEvent": {
+        "id": 1234567890,
+        "timestamp": 123456789,
+        "message": "log message"
+    }
+}
