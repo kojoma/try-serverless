@@ -48,32 +48,83 @@ import logging
 import os
 import base64
 import zlib
-import datetime
+import time
+import boto3
 
 from urllib2 import Request, urlopen, URLError, HTTPError
+from datetime import datetime, timedelta
 
 HOOK_URL = os.environ['hookUrl']
 SLACK_CHANNEL = os.environ['slackChannel']
 
+DYNAMODB_TABLE_NAME = "log_notify_messages-dev"
+TTL_MINUTES = 30
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+dynamodb = boto3.resource('dynamodb')
+dynamodb_table = dynamodb.Table(DYNAMODB_TABLE_NAME)
+
 def notify_slack(event, context):
     logger.info(json.dumps(event))
+    message = __find_log_message(event['logEvent']['message'])
 
-    slack_message = build_message(event['logGroup'], event['logStream'], event['logEvent'])
-    req = Request(HOOK_URL, json.dumps(slack_message))
+    if __should_notify(message):
+        slack_message = __build_message(event['logGroup'], event['logStream'], event['logEvent'])
+        req = Request(HOOK_URL, json.dumps(slack_message))
+
+        try:
+            response = urlopen(req)
+            response.read()
+
+            __save_posted_message(message)
+
+            logger.info("Message posted to %s", slack_message['channel'])
+        except HTTPError as e:
+            logger.error("Request failed: %d %s", e.code, e.reason)
+        except URLError as e:
+            logger.error("Server connection failed: %s", e.reason)
+    else:
+        logger.info("Message notification suppressed: %s", message)
+
+def __find_log_message(message):
+    log_message = ""
 
     try:
-        response = urlopen(req)
-        response.read()
-        logger.info("Message posted to %s", slack_message['channel'])
-    except HTTPError as e:
-        logger.error("Request failed: %d %s", e.code, e.reason)
-    except URLError as e:
-        logger.error("Server connection failed: %s", e.reason)
+        message_json = json.loads(message)
+        log_message = message_json['content']
+    except:
+        log_message = message
 
-def build_message(log_group, log_stream, log_event):
+    return log_message
+
+def __should_notify(message):
+    response = dynamodb_table.scan()
+    logger.info(response['Items'])
+
+    should_notify = True
+    for item in response['Items']:
+        if item['message'] == message:
+            should_notify = False
+            break
+
+    return should_notify
+
+def __save_posted_message(message):
+    expired_at = datetime.today() + timedelta(minutes=TTL_MINUTES)
+
+    dynamodb_table.put_item(
+        Item={
+            'message': message,
+            'expired_at': __datetime_to_epoch(expired_at),
+        }
+    )
+
+def __datetime_to_epoch(datetime):
+    return int(time.mktime(datetime.timetuple()))
+
+def __build_message(log_group, log_stream, log_event):
     ref_time = log_event['timestamp']
     ref_id = log_event['id']
 
@@ -86,14 +137,14 @@ def build_message(log_group, log_stream, log_event):
         time = message_json['datetime']
         level = message_json['level']
         log_text = message_json['content']
-        color = get_color(level)
+        color = __get_color(level)
         text = "%s\n%s / %s で `%s` ログがあります(<%s|詳細はこちら>)" % (time, log_group, log_stream, level, url)
     except:
         # json形式でない場合は、可能な範囲で抜き出し、難しい項目は擬似的な値を入れたりする
-        date = datetime.datetime.fromtimestamp(int(str(ref_time)[:10]))
+        date = datetime.fromtimestamp(int(str(ref_time)[:10]))
         time = str(date)
         log_text = log_event['message']
-        color = get_color("-")
+        color = __get_color("-")
         text = "%s\n%s / %s でログがあります(<%s|詳細はこちら>)" % (time, log_group, log_stream, url)
 
     slack_message = {
@@ -111,7 +162,7 @@ def build_message(log_group, log_stream, log_event):
 
     return slack_message
 
-def get_color(log_level):
+def __get_color(log_level):
     if log_level == "error":
         color = "danger"
     elif log_level == "warn":

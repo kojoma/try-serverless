@@ -18,7 +18,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/try-serverless/dev/1511319764424-2017-11-22T03:02:44.424Z/try-serverless.zip"
+          "S3Key": "serverless/try-serverless/dev/1511331936290-2017-11-22T06:25:36.290Z/try-serverless.zip"
         },
         "FunctionName": "notify_slack-dev",
         "Handler": "handler.notify_slack",
@@ -38,14 +38,14 @@
         "NotifyUnderscoreslackLogGroup"
       ]
     },
-    "NotifyUnderscoreslackLambdaVersiongUs7XiN9Gp5kaSrSi2q5UyRMqMOnUaRabcM4cyQbE4": {
+    "NotifyUnderscoreslackLambdaVersiontPhgzcquHsKq5gshLYAcr7aTijjWhUEIzjopefics": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "NotifyUnderscoreslackLambdaFunction"
         },
-        "CodeSha256": "gUs7XiN/9Gp5kaSrSi2q5UyRMqMOnUaRabcM4cyQbE4=",
+        "CodeSha256": "tPhgzcquHsKq5g+shLYAcr/7aTijjWhUEIzjopefics=",
         "Description": "log message post to slack."
       }
     },
@@ -89,7 +89,7 @@
     "NotifyUnderscoreslackLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "NotifyUnderscoreslackLambdaVersiongUs7XiN9Gp5kaSrSi2q5UyRMqMOnUaRabcM4cyQbE4"
+        "Ref": "NotifyUnderscoreslackLambdaVersiontPhgzcquHsKq5gshLYAcr7aTijjWhUEIzjopefics"
       }
     }
   }
