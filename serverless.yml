@@ -2,6 +2,16 @@
 
 service: try-serverless
 
+plugins:
+  - serverless-dynamodb-ttl
+
+custom:
+  dynamodb:
+    tableName: log_notify_messages-${self:provider.stage}
+    ttl:
+      - table: ${self:custom.dynamodb.tableName}
+        field: expired_at
+
 provider:
   name: aws
   runtime: python2.7
@@ -20,3 +30,23 @@ functions:
     runtime: python2.7
     timeout: 3
     role: arn:aws:iam::059991434768:role/lambda-role
+
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.dynamodb.tableName}
+        AttributeDefinitions:
+          - AttributeName: message
+            AttributeType: S
+          - AttributeName: expired_at
+            AttributeType: N
+        KeySchema:
+          - AttributeName: message
+            KeyType: HASH
+          - AttributeName: expired_at
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
