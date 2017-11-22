@@ -18,7 +18,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/try-serverless/dev/1511257622382-2017-11-21T09:47:02.382Z/try-serverless.zip"
+          "S3Key": "serverless/try-serverless/dev/1511319764424-2017-11-22T03:02:44.424Z/try-serverless.zip"
         },
         "FunctionName": "notify_slack-dev",
         "Handler": "handler.notify_slack",
@@ -38,15 +38,45 @@
         "NotifyUnderscoreslackLogGroup"
       ]
     },
-    "NotifyUnderscoreslackLambdaVersion6okG4ofIePvFiS3SE4NNYPitRBaVb6Xp1RoRtJHoM8": {
+    "NotifyUnderscoreslackLambdaVersiongUs7XiN9Gp5kaSrSi2q5UyRMqMOnUaRabcM4cyQbE4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "NotifyUnderscoreslackLambdaFunction"
         },
-        "CodeSha256": "6okG4ofIePvFiS3SE4N+NYPitRBaVb6Xp1RoRtJHoM8=",
+        "CodeSha256": "gUs7XiN/9Gp5kaSrSi2q5UyRMqMOnUaRabcM4cyQbE4=",
         "Description": "log message post to slack."
+      }
+    },
+    "usersTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "log_notify_messages-dev",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "message",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "expired_at",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "message",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "expired_at",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        }
       }
     }
   },
@@ -59,7 +89,7 @@
     "NotifyUnderscoreslackLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "NotifyUnderscoreslackLambdaVersion6okG4ofIePvFiS3SE4NNYPitRBaVb6Xp1RoRtJHoM8"
+        "Ref": "NotifyUnderscoreslackLambdaVersiongUs7XiN9Gp5kaSrSi2q5UyRMqMOnUaRabcM4cyQbE4"
       }
     }
   }
