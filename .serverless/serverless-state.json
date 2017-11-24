@@ -9,7 +9,7 @@
       "region": "ap-northeast-1",
       "variableSyntax": "\\${([ ~:a-zA-Z0-9._'\",\\-\\/\\(\\)]+?)}",
       "name": "aws",
-      "runtime": "python2.7",
+      "runtime": "python3.6",
       "environment": {
         "slackChannel": "#test",
         "hookUrl": "https://hooks.slack.com/services/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"
@@ -36,13 +36,13 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/try-serverless/dev/1511331936290-2017-11-22T06:25:36.290Z/try-serverless.zip"
+                "S3Key": "serverless/try-serverless/dev/1511503684054-2017-11-24T06:08:04.054Z/try-serverless.zip"
               },
               "FunctionName": "notify_slack-dev",
               "Handler": "handler.notify_slack",
               "MemorySize": 128,
               "Role": "arn:aws:iam::059991434768:role/lambda-role",
-              "Runtime": "python2.7",
+              "Runtime": "python3.6",
               "Timeout": 3,
               "Description": "log message post to slack.",
               "Environment": {
@@ -56,14 +56,14 @@
               "NotifyUnderscoreslackLogGroup"
             ]
           },
-          "NotifyUnderscoreslackLambdaVersiontPhgzcquHsKq5gshLYAcr7aTijjWhUEIzjopefics": {
+          "NotifyUnderscoreslackLambdaVersionmnY2dHhttwqdG8pwwc9DQZ9E79eLebqk1SLGzJgRQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "NotifyUnderscoreslackLambdaFunction"
               },
-              "CodeSha256": "tPhgzcquHsKq5g+shLYAcr/7aTijjWhUEIzjopefics=",
+              "CodeSha256": "mnY2dHhttwqdG8pwwc9D/QZ9E79eLebqk1+SLGzJgRQ=",
               "Description": "log message post to slack."
             }
           },
@@ -107,7 +107,7 @@
           "NotifyUnderscoreslackLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "NotifyUnderscoreslackLambdaVersiontPhgzcquHsKq5gshLYAcr7aTijjWhUEIzjopefics"
+              "Ref": "NotifyUnderscoreslackLambdaVersionmnY2dHhttwqdG8pwwc9DQZ9E79eLebqk1SLGzJgRQ"
             }
           }
         }
@@ -150,7 +150,7 @@
         "name": "notify_slack-dev",
         "description": "log message post to slack.",
         "memorySize": 128,
-        "runtime": "python2.7",
+        "runtime": "python3.6",
         "timeout": 3,
         "role": "arn:aws:iam::059991434768:role/lambda-role",
         "events": [],
@@ -196,7 +196,7 @@
     "artifact": "/Users/masaru.kojo/work/test/serverless/try-serverless/.serverless/try-serverless.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/try-serverless/dev/1511331936290-2017-11-22T06:25:36.290Z",
+    "artifactDirectoryName": "serverless/try-serverless/dev/1511503684054-2017-11-24T06:08:04.054Z",
     "artifact": "try-serverless.zip"
   }
 }

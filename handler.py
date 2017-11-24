@@ -41,8 +41,6 @@ message内が下記のようなJSON形式の場合、ログレベルに応じて
 ```
 """
 
-from __future__ import print_function
-
 import json
 import logging
 import os
@@ -51,7 +49,8 @@ import zlib
 import time
 import boto3
 
-from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
 from datetime import datetime, timedelta
 
 HOOK_URL = os.environ['hookUrl']
@@ -72,10 +71,11 @@ def notify_slack(event, context):
 
     if __should_notify(message):
         slack_message = __build_message(event['logGroup'], event['logStream'], event['logEvent'])
-        req = Request(HOOK_URL, json.dumps(slack_message))
+        request_data = json.dumps(slack_message).encode('utf-8')
+        request = Request(HOOK_URL, data=request_data)
 
         try:
-            response = urlopen(req)
+            response = urlopen(request)
             response.read()
 
             __save_posted_message(message)
