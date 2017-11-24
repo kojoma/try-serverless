@@ -41,8 +41,6 @@ message内が下記のようなJSON形式の場合、ログレベルに応じて
 ```
 """
 
-from __future__ import print_function
-
 import json
 import logging
 import os
@@ -51,8 +49,10 @@ import zlib
 import time
 import boto3
 
-from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib.request import Request, urlopen
+from urllib.error import URLError, HTTPError
 from datetime import datetime, timedelta
+from typing import Dict
 
 HOOK_URL = os.environ['hookUrl']
 SLACK_CHANNEL = os.environ['slackChannel']
@@ -72,10 +72,11 @@ def notify_slack(event, context):
 
     if __should_notify(message):
         slack_message = __build_message(event['logGroup'], event['logStream'], event['logEvent'])
-        req = Request(HOOK_URL, json.dumps(slack_message))
+        request_data = json.dumps(slack_message).encode('utf-8')
+        request = Request(HOOK_URL, data=request_data)
 
         try:
-            response = urlopen(req)
+            response = urlopen(request)
             response.read()
 
             __save_posted_message(message)
@@ -88,7 +89,7 @@ def notify_slack(event, context):
     else:
         logger.info("Message notification suppressed: %s", message)
 
-def __find_log_message(message):
+def __find_log_message(message: str) -> str:
     log_message = ""
 
     try:
@@ -99,7 +100,7 @@ def __find_log_message(message):
 
     return log_message
 
-def __should_notify(message):
+def __should_notify(message: str) -> bool:
     response = dynamodb_table.scan()
     logger.info(response['Items'])
 
@@ -111,7 +112,7 @@ def __should_notify(message):
 
     return should_notify
 
-def __save_posted_message(message):
+def __save_posted_message(message: str) -> None:
     expired_at = datetime.today() + timedelta(minutes=TTL_MINUTES)
 
     dynamodb_table.put_item(
@@ -121,10 +122,10 @@ def __save_posted_message(message):
         }
     )
 
-def __datetime_to_epoch(datetime):
+def __datetime_to_epoch(datetime: datetime) -> int:
     return int(time.mktime(datetime.timetuple()))
 
-def __build_message(log_group, log_stream, log_event):
+def __build_message(log_group: str, log_stream: str, log_event: Dict[str, str]) -> Dict[str, str]:
     ref_time = log_event['timestamp']
     ref_id = log_event['id']
 
@@ -162,7 +163,7 @@ def __build_message(log_group, log_stream, log_event):
 
     return slack_message
 
-def __get_color(log_level):
+def __get_color(log_level: str) -> str:
     if log_level == "error":
         color = "danger"
     elif log_level == "warn":
